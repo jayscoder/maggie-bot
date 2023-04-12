@@ -19,22 +19,25 @@ async def on_ready():
             # if channel.name == '欢迎光临！':
             # await channel.send('我上线啦')
             print(channel)
+    try:
+        synced =await bot.tree.sync()
+        print(f'synced {len(synced)} commands')
+    except Exception as e:
+        print(e)
+
+# # 定义bot接受到消息的事件
+# @bot.event
+# async def on_message(message: discord.Message):
+#     if message.author == bot.user:
+#         return
+#     print(message.content)
+#     await message.channel.send(f"收到: {message.content}")
 
 
-@bot.command("")
 
-# 定义bot接受到消息的事件
-@bot.event
-async def on_message(message: discord.Message):
-    if message.author == bot.user:
-        return
-    print(message.content)
-    await message.channel.send(f"收到: {message.content}")
-
-@bot.command()
-async def length(ctx):
-    await ctx.send('your message is {} characters long.'.format(len(ctx.message.content)))
-    print("test print")
+@bot.tree.command(name="hello")
+async def hello(interaction: discord.Interaction):
+    await interaction.response.send_message(f"Hey {interaction.user.mention}", ephemeral=True)
 
 
 bot.run(DISCORD_BOT_TOKEN)

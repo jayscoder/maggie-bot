@@ -17,5 +17,6 @@ async def on_message(message: discord.Message):
     await message.channel.send(f"收到: {message.content}")
 
 
-if __name__ == '__main__':
-    bot.run(os.getenv("DISCORD_BOT_TOKEN"))
+
+
+bot.run(DISCORD_BOT_TOKEN)

@@ -5,9 +5,6 @@ from enum import Flag, auto
 import re
 from discord.ext import commands
 import discord
-from discord_slash import SlashCommand, SlashContext
-slash = SlashCommand(bot, sync_commands=True)
-
 DISCORD_BOT_TOKEN = os.environ['DISCORD_BOT_TOKEN']
 
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
@@ -34,9 +31,10 @@ async def on_message(message: discord.Message):
     print(message.content)
     await message.channel.send(f"收到: {message.content}")
 
+@bot.command()
+async def length(ctx):
+    await ctx.send('your message is {} characters long.'.format(len(ctx.message.content)))
+    print("test print")
 
-@slash.slash(name="hello", description="Says hello to the user")
-async def hello(ctx: SlashContext):
-    await ctx.send(f"Hello {ctx.author.mention}!")
 
 bot.run(DISCORD_BOT_TOKEN)

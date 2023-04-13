@@ -3,17 +3,27 @@ import time
 import asyncio
 import discord
 
-class CustomClient(discord.Client):
-    async def on_ready(self):
-        print(f'{self.user} has connected to Discord!')
+bot = discord.Client(intents=discord.Intents.all())
 
-    async def on_message(self, message: discord.Message):
-        if self.user == message.author:
-            return
-        for i in range(5):
-            await asyncio.sleep(3)
-            await message.channel.send(f'{message.content}: {i}')
+def coroutine():
+    value = yield
+    index = 0
+    while True:
+        value = yield f'收到-{index}: {value}'
+        index += 1
 
-bot = CustomClient(intents=discord.Intents.all())
+
+coro = coroutine()
+
+async def on_ready(self):
+    print(f'{self.user} has connected to Discord!')
+
+async def on_message(self, message: discord.Message):
+    if self.user == message.author:
+        return
+    coro.send(message.content)
+    await message.channel.send(next(coro))
+
+
 bot.run(os.getenv('DISCORD_BOT_TOKEN'))
 

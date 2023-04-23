@@ -1,4 +1,5 @@
 import os
+import threading
 import time
 import asyncio
 import discord
@@ -16,7 +17,8 @@ async def on_message(message: discord.Message):
     await async_on_message(message)
 
 async def async_on_message(message: discord.Message):
-    with message.channel.typing():
+    print(f"{message.content} current_thread=" + threading.current_thread().name)
+    async with message.channel.typing():
         time.sleep(5)
 
     await message.channel.send('Reply: ' + message.content)

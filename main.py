@@ -3,9 +3,7 @@ import threading
 import time
 import asyncio
 import discord
-from concurrent.futures import ThreadPoolExecutor
-
-executor = ThreadPoolExecutor(max_workers=3)
+import threads
 
 bot = discord.Client(intents=discord.Intents.all())
 
@@ -19,20 +17,15 @@ async def on_ready():
 async def on_message(message: discord.Message):
     if bot.user == message.author:
         return
-
-    executor.submit(on_message_task, message)
-
-
-def on_message_task(message: discord.Message):
-    async def task():
-        print(f"{message.content} current_thread=" + threading.current_thread().name)
-        async with message.channel.typing():
-            time.sleep(5)
-
-        await message.channel.send('Reply: ' + message.content)
-    asyncio.run(task())
-    # asyncio.run_coroutine_threadsafe(task(), asyncio.get_event_loop())
+    # 每个用户在每个频道一个单独的线程
+    loop = threads.new_thread_loop(name=f'{message.channel.id}/{message.author.id}')
+    asyncio.run_coroutine_threadsafe(on_message_task(message), loop=loop)
 
 
+async def on_message_task(message: discord.Message):
+    print(f"{message.content} current_thread=" + threading.current_thread().name)
+    async with message.channel.typing():
+        time.sleep(3)
+    await message.channel.send('Reply: ' + message.content)
 
 bot.run(os.getenv('DISCORD_BOT_TOKEN'))

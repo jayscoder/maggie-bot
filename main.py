@@ -5,25 +5,21 @@ import discord
 
 bot = discord.Client(intents=discord.Intents.all())
 
-def coroutine():
-    value = yield
-    index = 0
-    while True:
-        value = yield f'收到-{index}: {value}'
-        index += 1
+@bot.event
+async def on_ready():
+    print(f'{bot.user} has connected to Discord!')
 
-
-coro = coroutine()
-
-async def on_ready(self):
-    print(f'{self.user} has connected to Discord!')
-
-async def on_message(self, message: discord.Message):
-    if self.user == message.author:
+@bot.event
+async def on_message(message: discord.Message):
+    if bot.user == message.author:
         return
-    coro.send(message.content)
-    await message.channel.send(next(coro))
+    await async_on_message(message)
 
+async def async_on_message(message: discord.Message):
+    with message.channel.typing():
+        time.sleep(5)
+
+    await message.channel.send('Reply: ' + message.content)
 
 bot.run(os.getenv('DISCORD_BOT_TOKEN'))
 
